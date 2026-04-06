@@ -1,0 +1,3 @@
+# Never upload .env to GitHub - it contains your secret MongoDB password
+.env
+node_modules/

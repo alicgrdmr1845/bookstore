@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ali's Book Store</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      color: #333;
+    }
+
+    header {
+      background: #2E4057;
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 { font-size: 1.6rem; }
+    header span { font-size: 0.85rem; opacity: 0.7; }
+
+    .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .card h2 { margin-bottom: 15px; color: #2E4057; font-size: 1.1rem; }
+
+    .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    input {
+      flex: 1;
+      min-width: 150px;
+      padding: 10px 14px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    button:hover { opacity: 0.85; }
+
+    .btn-add { background: #048A81; color: white; }
+    .btn-load { background: #2E4057; color: white; }
+    .btn-delete { background: #e74c3c; color: white; padding: 6px 12px; font-size: 0.8rem; }
+    .btn-update { background: #f39c12; color: white; padding: 6px 12px; font-size: 0.8rem; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #2E4057; color: white; padding: 10px 14px; text-align: left; font-size: 0.85rem; }
+    td { padding: 10px 14px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+    tr:hover td { background: #f9f9f9; }
+
+    .badge {
+      background: #e8f5f4;
+      color: #048A81;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .msg { padding: 10px; background: #e8f5f4; border-left: 4px solid #048A81; border-radius: 4px; font-size: 0.9rem; margin-top: 10px; }
+    .err { background: #fdecea; border-color: #e74c3c; }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.8rem;
+      color: #999;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>📚 Ali's Book Store</h1>
+  <span>CST8326 – Web Programming</span>
+</header>
+
+<div class="container">
+
+  <!-- ADD PRODUCT FORM -->
+  <div class="card">
+    <h2>➕ Add New Book</h2>
+    <div class="form-row">
+      <input type="text" id="productId" placeholder="Product ID (e.g. P6)" />
+      <input type="text" id="productName" placeholder="Book Name" />
+      <input type="number" id="price" placeholder="Price (e.g. 19.99)" step="0.01" />
+      <button class="btn-add" onclick="addProduct()">Add Book</button>
+    </div>
+    <div id="addMsg"></div>
+  </div>
+
+  <!-- UPDATE PRODUCT FORM -->
+  <div class="card">
+    <h2>✏️ Update a Book</h2>
+    <div class="form-row">
+      <input type="text" id="updateId" placeholder="Product ID to update (e.g. P1)" />
+      <input type="text" id="updateName" placeholder="New Book Name" />
+      <input type="number" id="updatePrice" placeholder="New Price" step="0.01" />
+      <button class="btn-update" onclick="updateProduct()">Update</button>
+    </div>
+    <div id="updateMsg"></div>
+  </div>
+
+  <!-- PRODUCT LIST -->
+  <div class="card">
+    <h2>📦 All Products in Book Store</h2>
+    <button class="btn-load" onclick="loadProducts()" style="margin-bottom:15px">🔄 Load Products</button>
+    <table>
+      <thead>
+        <tr>
+          <th>Store ID</th>
+          <th>Store Name</th>
+          <th>Product ID</th>
+          <th>Product Name</th>
+          <th>Price</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="productTable">
+        <tr><td colspan="6" style="text-align:center;color:#aaa">Click "Load Products" to view</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ALL STORES COMBINED -->
+  <div class="card">
+    <h2>🌐 All Products from All Stores</h2>
+    <button class="btn-load" onclick="loadAllProducts()" style="margin-bottom:15px">🔄 Load All Stores</button>
+    <table>
+      <thead>
+        <tr>
+          <th>Store</th>
+          <th>Product ID</th>
+          <th>Product Name</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody id="allTable">
+        <tr><td colspan="4" style="text-align:center;color:#aaa">Click "Load All Stores" to view</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  ⚠️ Student work for demonstration purposes only — CST8326 Web Programming, Algonquin College
+</footer>
+
+<script>
+  // Load all products from THIS store
+  async function loadProducts() {
+    const res = await fetch('/products');
+    const data = await res.json();
+    const tbody = document.getElementById('productTable');
+    tbody.innerHTML = data.map(p => `
+      <tr>
+        <td><span class="badge">${p.storeId}</span></td>
+        <td>${p.storeName}</td>
+        <td>${p.productId}</td>
+        <td>${p.productName}</td>
+        <td>$${p.price.toFixed(2)}</td>
+        <td><button class="btn-delete" onclick="deleteProduct('${p.productId}')">Delete</button></td>
+      </tr>
+    `).join('');
+  }
+
+  // Load products from ALL 3 stores
+  async function loadAllProducts() {
+    const res = await fetch('/allproducts');
+    const data = await res.json();
+    const tbody = document.getElementById('allTable');
+    tbody.innerHTML = data.map(p => `
+      <tr>
+        <td><span class="badge">${p.storeName || p.storeId}</span></td>
+        <td>${p.productId}</td>
+        <td>${p.productName}</td>
+        <td>$${Number(p.price).toFixed(2)}</td>
+      </tr>
+    `).join('');
+  }
+
+  // Add a new product
+  async function addProduct() {
+    const productId = document.getElementById('productId').value;
+    const productName = document.getElementById('productName').value;
+    const price = document.getElementById('price').value;
+    const msg = document.getElementById('addMsg');
+
+    const res = await fetch('/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId, productName, price: parseFloat(price) })
+    });
+
+    if (res.ok) {
+      msg.innerHTML = '<div class="msg">✅ Book added successfully!</div>';
+      loadProducts();
+    } else {
+      const err = await res.json();
+      msg.innerHTML = `<div class="msg err">❌ ${err.error}</div>`;
+    }
+  }
+
+  // Update an existing product
+  async function updateProduct() {
+    const id = document.getElementById('updateId').value;
+    const productName = document.getElementById('updateName').value;
+    const price = document.getElementById('updatePrice').value;
+    const msg = document.getElementById('updateMsg');
+
+    const res = await fetch(`/products/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productName, price: parseFloat(price) })
+    });
+
+    if (res.ok) {
+      msg.innerHTML = '<div class="msg">✅ Book updated successfully!</div>';
+      loadProducts();
+    } else {
+      const err = await res.json();
+      msg.innerHTML = `<div class="msg err">❌ ${err.error}</div>`;
+    }
+  }
+
+  // Delete a product
+  async function deleteProduct(id) {
+    if (!confirm(`Delete product ${id}?`)) return;
+    await fetch(`/products/${id}`, { method: 'DELETE' });
+    loadProducts();
+  }
+</script>
+
+</body>
+</html>
