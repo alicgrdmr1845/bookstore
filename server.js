@@ -164,7 +164,7 @@ app.get('/allproducts', async (req, res) => {
     // Fetch products from Kemal's Car Store (replace URL after he deploys)
     let kemalProducts = [];
     try {
-      const kemalRes = await fetch('https://kemal-store.onrender.com/products');
+      const kemalRes = await fetch('https://clothing-store-saix.onrender.com/products');
       kemalProducts = await kemalRes.json();
     } catch (e) {
       // If Kemal's store is not yet deployed, skip it
