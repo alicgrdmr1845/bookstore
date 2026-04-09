@@ -12,7 +12,7 @@ const TEST_NAME = 'getAll to show all products';
 
 // The URL to test - uses localhost when running locally
 // Change this to your deployed Render URL after deployment
-const URL = process.env.TEST_URL || 'http://localhost:3001/products';
+const URL = process.env.TEST_URL || 'https://ali-bookstore.onrender.com/products';
 
 // Run the test
 async function runTest() {
